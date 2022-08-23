@@ -65,6 +65,8 @@ body {
 .letter span {
   text-align: center;
   cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .it .l-it,
