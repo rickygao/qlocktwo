@@ -1,7 +1,9 @@
 import './style.css';
 import letters, { Letter } from './letters';
 
-function createLetterDivElement(letter: Letter) {
+const appElement = document.getElementById('app');
+
+const createLetterElement = (letter: Letter) => {
   const div = document.createElement('div');
   const span = document.createElement('span');
   const text = document.createTextNode(letter.name);
@@ -9,23 +11,27 @@ function createLetterDivElement(letter: Letter) {
   span.appendChild(text);
   div.classList.add('letter', ...letter.sections.map((s) => 'l-' + s));
   return div;
-}
+};
 
-function collectElementsIntoDiv(elements: HTMLElement[]) {
+const collectElementsIntoDiv = (elements: HTMLElement[]) => {
   const div = document.createElement('div');
   div.append(...elements);
   return div;
-}
+};
 
-const clockElement = collectElementsIntoDiv(
-  letters.map((row) => {
-    const rowElement = collectElementsIntoDiv(row.map(createLetterDivElement));
-    rowElement.classList.add('clock-row');
-    return rowElement;
-  })
-);
+const createClockElement = (letters: Letter[][]) => {
+  const div = collectElementsIntoDiv(
+    letters.map((row) => {
+      const rowElement = collectElementsIntoDiv(row.map(createLetterElement));
+      rowElement.classList.add('clock-row');
+      return rowElement;
+    })
+  );
+  div.classList.add('clock');
+  return div;
+};
 
-const appElement = document.getElementById('app');
+const clockElement = createClockElement(letters);
 appElement?.appendChild(clockElement);
 
 const flushClockElement = (hours: number, minutes: number) => {
@@ -38,7 +44,7 @@ const flushClockElement = (hours: number, minutes: number) => {
 const flushClockElementWithDate = (date: Date) =>
   flushClockElement(date.getHours(), date.getMinutes());
 
-function init() {
+const init = () => {
   const params = new URLSearchParams(window.location.search);
   const [h, m] = [params.get('h'), params.get('m')];
   if (h !== null && m !== null) {
@@ -49,13 +55,13 @@ function init() {
     }
   }
   initWithCurrentTime();
-}
+};
 
-function initWithHoursAndMinutes(
+const initWithHoursAndMinutes = (
   hours: number,
   minutes: number,
   running?: boolean
-) {
+) => {
   flushClockElement(hours, minutes);
   let runningMinutes = hours * 60 + minutes;
   if (running) {
@@ -67,11 +73,11 @@ function initWithHoursAndMinutes(
       );
     }, 1000);
   }
-}
+};
 
-function initWithCurrentTime() {
+const initWithCurrentTime = () => {
   flushClockElementWithDate(new Date());
   setInterval(() => flushClockElementWithDate(new Date()), 1000);
-}
+};
 
 init();

@@ -32,19 +32,18 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--page-background);
 }
 
 #app {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: var(--clock-size);
 }
 
 .clock {
-  width: var(--clock-size);
+  width: 100%;
   padding: calc(var(--clock-size) / 12);
   color: var(--clock-dim-color);
   background-color: var(--clock-background);
@@ -53,6 +52,8 @@ body {
   border-radius: calc(var(--clock-size) / 12);
   box-shadow: 0 0 calc(var(--clock-size) / 16) var(--clock-background),
     0 0 var(--clock-size) rgba(255, 255, 255, 0.125);
+  text-align: center;
+  cursor: default;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -70,12 +71,7 @@ body {
   flex-shrink: 1;
   flex-basis: 0;
   aspect-ratio: 1;
-  transition: 1s color, 1s text-shadow;
-}
-
-.letter span {
-  text-align: center;
-  cursor: default;
+  transition: color 1s, text-shadow 1s;
 }
 
 /* prettier-ignore-start */
