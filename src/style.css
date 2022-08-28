@@ -1,12 +1,12 @@
 :root {
-  font-family: sans-serif;
-
   --clock-size: min(80vw, 80vh, 480px);
-  font-size: calc(var(--clock-size) / 32);
   --clock-lit-color: hsl(38, 75%, 95%);
   --clock-dim-color: hsl(38, 75%, 42%);
   --clock-background: hsl(38, 75%, 50%);
   --page-background: hsl(43, 85%, 55%);
+
+  font-family: sans-serif;
+  font-size: calc(var(--clock-size) / 32);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -64,13 +64,11 @@ body {
 }
 
 .letter {
+  flex: 1 1;
+  aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 0;
-  aspect-ratio: 1;
   transition: color 1s, text-shadow 1s;
 }
 

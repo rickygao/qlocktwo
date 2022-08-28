@@ -35,9 +35,8 @@ const clockElement = createClockElement(letters);
 appElement?.appendChild(clockElement);
 
 const flushClockElement = (hours: number, minutes: number) => {
+  const [h, m] = [hours % 12 || 12, minutes];
   const amOrPm = hours < 12 ? 'am' : 'pm';
-  const h = hours % 12 || 12;
-  const m = minutes;
   clockElement.className = `clock it is h-${h} m-${m} ${amOrPm}`;
 };
 
@@ -46,9 +45,9 @@ const flushClockElementWithDate = (date: Date) =>
 
 const init = () => {
   const params = new URLSearchParams(window.location.search);
-  const [h, m] = [params.get('h'), params.get('m')];
-  if (h !== null && m !== null) {
-    const [hours, minutes] = [parseInt(h), parseInt(m)];
+  const [hParam, mParam] = [params.get('h'), params.get('m')];
+  if (hParam !== null && mParam !== null) {
+    const [hours, minutes] = [parseInt(hParam), parseInt(mParam)];
     if (hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
       initWithHoursAndMinutes(hours, minutes, params.has('r'));
       return;
@@ -66,9 +65,9 @@ const initWithHoursAndMinutes = (
   let runningMinutes = hours * 60 + minutes;
   if (running) {
     setInterval(() => {
-      runningMinutes += 1;
+      runningMinutes = (runningMinutes + 1) % (24 * 60);
       flushClockElement(
-        Math.floor(runningMinutes / 60) % 24,
+        Math.floor(runningMinutes / 60),
         runningMinutes % 60
       );
     }, 1000);
