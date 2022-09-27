@@ -1,5 +1,7 @@
 # QlockTwo
 
+[![Build](https://github.com/rickygao/qlocktwo/actions/workflows/build.yml/badge.svg)](https://github.com/rickygao/qlocktwo/actions/workflows/build.yml)
+
 A web implementation of the [QLOCKTWO](https://qlocktwo.com/) clock face. Visit [here](https://pages.nodr.ink/qlocktwo/) for a demo.
 
 ## Usage
