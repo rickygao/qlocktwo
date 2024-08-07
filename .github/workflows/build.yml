@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [18.x, 20.x, 22.x]
 
     steps:
     - uses: actions/checkout@v3
@@ -20,11 +20,12 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: yarn
+    - name: Install package manager
+      run: corepack enable && corepack install
     - name: Install dependencies
-      run: yarn
+      run: pnpm install
     - name: Build
-      run: yarn build
+      run: pnpm build
     - uses: actions/upload-artifact@v3
       with:
         name: qlocktwo-${{ matrix.node-version }}
