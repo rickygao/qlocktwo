@@ -34,49 +34,56 @@ const createClockElement = (letters: Letter[][]) => {
 const clockElement = createClockElement(letters);
 appElement?.appendChild(clockElement);
 
-const flushClockElement = (hours: number, minutes: number) => {
+type Time = {
+  hours: number;
+  minutes: number;
+};
+
+const dateToTime = (date: Date): Time => ({
+  hours: date.getHours(),
+  minutes: date.getMinutes()
+});
+
+const parseTime = (params: URLSearchParams): Time | undefined => {
+  const [hParam, mParam] = [params.get('h'), params.get('m')];
+  if (hParam === null || mParam === null) return;
+
+  const [hours, minutes] = [parseInt(hParam, 10), parseInt(mParam, 10)];
+  if (hours < 0 || hours >= 24 || minutes < 0 || minutes >= 60) return;
+
+  return { hours, minutes };
+}
+
+const flush = ({ hours, minutes }: Time) => {
   const [h, m] = [hours % 12 || 12, minutes];
   const amOrPm = hours < 12 ? 'am' : 'pm';
   clockElement.className = `clock it is h-${h} m-${m} ${amOrPm}`;
 };
 
-const flushClockElementWithDate = (date: Date) =>
-  flushClockElement(date.getHours(), date.getMinutes());
+const timeByNow = () => dateToTime(new Date());
 
-const init = () => {
-  const params = new URLSearchParams(window.location.search);
-  const [hParam, mParam] = [params.get('h'), params.get('m')];
-  if (hParam !== null && mParam !== null) {
-    const [hours, minutes] = [parseInt(hParam), parseInt(mParam)];
-    if (hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
-      initWithHoursAndMinutes(hours, minutes, params.has('r'));
-      return;
-    }
-  }
-  initWithCurrentTime();
+const timeByMock = (origin: Time, fast?: boolean) => {
+  const secondsPerMinute = fast ? 1 : 60;
+
+  let originTimestamp = Date.now();
+  return () => {
+    const nowTimestamp = Date.now();
+    const elapsedMinutes = Math.floor((nowTimestamp - originTimestamp) / (1000 * secondsPerMinute));
+    const totalMinutes = (origin.hours * 60 + origin.minutes + elapsedMinutes) % (24 * 60);
+
+    return {
+      hours: Math.floor(totalMinutes / 60),
+      minutes: totalMinutes % 60
+    };
+  };
 };
 
-const initWithHoursAndMinutes = (
-  hours: number,
-  minutes: number,
-  running?: boolean
-) => {
-  flushClockElement(hours, minutes);
-  let runningMinutes = hours * 60 + minutes;
-  if (running) {
-    setInterval(() => {
-      runningMinutes = (runningMinutes + 1) % (24 * 60);
-      flushClockElement(
-        Math.floor(runningMinutes / 60),
-        runningMinutes % 60
-      );
-    }, 1000);
-  }
+const init = (getTime: () => Time) => {
+  flush(getTime());
+  setInterval(() => flush(getTime()), 1000);
 };
 
-const initWithCurrentTime = () => {
-  flushClockElementWithDate(new Date());
-  setInterval(() => flushClockElementWithDate(new Date()), 1000);
-};
-
-init();
+const params = new URLSearchParams(window.location.search);
+const time = parseTime(params);
+const fast = params.has('r');
+init(time ? timeByMock(time, fast) : timeByNow);
